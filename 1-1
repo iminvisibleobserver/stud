@@ -1,0 +1,103 @@
+1)
+#include <iostream>
+using namespace std;
+
+void printReverse(const string& str, int index) {
+    
+    if (index < 0) return; 
+    cout << str[index];
+    printReverse(str, index - 1);
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    string str = "tiger";
+    cout << "Реверс строки: ";
+    printReverse(str, str.size() - 1);
+    cout << endl;
+    return 0;
+}
+
+2)
+ #include <iostream>
+using namespace std;
+
+struct ListNode {
+    int val;
+    ListNode* next;
+    ListNode(int x) : val(x), next(nullptr) {}
+};
+
+ListNode* swapPairs(ListNode* head) {
+    if (!head || !head->next) return head; 
+    ListNode* nextNode = head->next;
+    head->next = swapPairs(nextNode->next);
+    nextNode->next = head;
+    return nextNode;
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    ListNode* head = new ListNode(1);
+    head->next = new ListNode(2);
+    head->next->next = new ListNode(3);
+    head->next->next->next = new ListNode(4);
+    head = swapPairs(head);
+    cout << "Заміна місцями вузлів у зв'язаному списку: ";
+    ListNode* temp = head;
+    while (temp) {
+        cout << temp->val << " ";
+        temp = temp->next;
+    }
+    cout << endl;
+    return 0;
+}
+
+3)
+#include <iostream>
+using namespace std;
+
+int fibonacci(int n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+int main() {
+    int n = 10;
+    cout << "Fibonacci(" << n << "): " << fibonacci(n) << endl;
+    return 0;
+}
+
+4)
+#include <iostream>
+using namespace std;
+
+int climbStairs(int n) {
+    if (n <= 1) return 1; 
+    return climbStairs(n - 1) + climbStairs(n - 2);
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    int n = 5;
+    cout << "Методи під'йому " << n << " сходинки: " << climbStairs(n) << endl;
+    return 0;
+}
+
+5)
+#include <iostream>
+using namespace std;
+
+double power(double x, int n) {
+    if (n == 0) return 1; // Base case
+    if (n < 0) return 1 / power(x, -n); // Handle negative exponents
+    return x * power(x, n - 1);
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    double x = 2;
+    int exp = 10;
+    cout << "Функція піднесення до степення(" << x << ", " << exp << "): " << power(x, exp) << endl;
+    return 0;
+}
