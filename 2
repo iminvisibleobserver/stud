@@ -1,0 +1,397 @@
+1)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int findMaxConsecutiveOnes(const vector<int>& nums, int index = 0, int currentCount = 0, int maxCount = 0) {
+    if (index == nums.size()) return max(maxCount, currentCount); 
+    if (nums[index] == 1) {
+        return findMaxConsecutiveOnes(nums, index + 1, currentCount + 1, maxCount);
+    }
+    else {
+        return findMaxConsecutiveOnes(nums, index + 1, 0, max(maxCount, currentCount));
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    vector<int> nums1 = { 1, 1, 0, 1, 1, 1 };
+    vector<int> nums2 = { 1, 0, 1, 1, 0, 1 };
+
+    cout << "Максимальна кількість послідовних одиниць (приклад 1): " << findMaxConsecutiveOnes(nums1) << endl;
+    cout << "Максимальна кількість послідовних одиниць (приклад 2): " << findMaxConsecutiveOnes(nums2) << endl;
+
+    return 0;
+}
+
+2)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int countDigits(int num) {
+    if (num == 0) return 0; 
+    return 1 + countDigits(num / 10);
+}
+
+int findNumbersWithEvenDigits(const vector<int>& nums, int index = 0, int count = 0) {
+    if (index == nums.size()) return count;
+    if (countDigits(nums[index]) % 2 == 0) {
+        return findNumbersWithEvenDigits(nums, index + 1, count + 1);
+    }
+    else {
+        return findNumbersWithEvenDigits(nums, index + 1, count);
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    vector<int> nums1 = { 12, 345, 2, 6, 7896 };
+    vector<int> nums2 = { 555, 901, 482, 1771 };
+
+    cout << "Числа з парними цифрами (Приклад 1): " << findNumbersWithEvenDigits(nums1) << endl;
+    cout << "Числа з парними цифрами (Приклад 2): " << findNumbersWithEvenDigits(nums2) << endl;
+
+    return 0;
+}
+
+3)
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+void sortedSquaresHelper(const vector<int>& nums, vector<int>& result, int left, int right, int index) {
+    if (left > right) return; 
+    int leftSquare = nums[left] * nums[left];
+    int rightSquare = nums[right] * nums[right];
+
+    if (leftSquare > rightSquare) {
+        result[index] = leftSquare;
+        sortedSquaresHelper(nums, result, left + 1, right, index - 1);
+    }
+    else {
+        result[index] = rightSquare;
+        sortedSquaresHelper(nums, result, left, right - 1, index - 1);
+    }
+}
+
+vector<int> sortedSquares(const vector<int>& nums) {
+    vector<int> result(nums.size());
+    sortedSquaresHelper(nums, result, 0, nums.size() - 1, nums.size() - 1);
+    return result;
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    vector<int> nums1 = { -4, -1, 0, 3, 10 };
+    vector<int> nums2 = { -7, -3, 2, 3, 11 };
+
+    vector<int> result1 = sortedSquares(nums1);
+    vector<int> result2 = sortedSquares(nums2);
+
+    cout << "Відсортовані квадрати (Приклад 1): ";
+    for (int num : result1) cout << num << " ";
+    cout << endl;
+
+    cout << "Відсортовані квадрати (Приклад 2): ";
+    for (int num : result2) cout << num << " ";
+    cout << endl;
+
+    return 0;
+}
+
+4)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void duplicateZerosHelper(vector<int>& arr, int index, int shift) {
+    if (index < 0) return; 
+
+    if (arr[index] == 0) {
+        if (index + shift < arr.size()) arr[index + shift] = 0;
+        shift--;
+    }
+    if (index + shift < arr.size()) arr[index + shift] = arr[index];
+
+    duplicateZerosHelper(arr, index - 1, shift);
+}
+
+void duplicateZeros(vector<int>& arr) {
+    int zeros = 0;
+    for (int num : arr) {
+        if (num == 0) zeros++;
+    }
+    duplicateZerosHelper(arr, arr.size() - 1, zeros);
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    vector<int> arr1 = { 1, 0, 2, 3, 0, 4, 5, 0 };
+    vector<int> arr2 = { 1, 2, 3 };
+
+    duplicateZeros(arr1);
+    duplicateZeros(arr2);
+
+    cout << "Дубльовані нулі (Приклад 1): ";
+    for (int num : arr1) cout << num << " ";
+    cout << endl;
+
+    cout << "Дубльовані нулі (Приклад 2): ";
+    for (int num : arr2) cout << num << " ";
+    cout << endl;
+
+    return 0;
+}
+
+5)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void mergeHelper(vector<int>& nums1, int m, const vector<int>& nums2, int n, int index1, int index2, int indexMerged) {
+    if (indexMerged < 0) return; 
+
+    if (index2 < 0 || (index1 >= 0 && nums1[index1] > nums2[index2])) {
+        nums1[indexMerged] = nums1[index1];
+        mergeHelper(nums1, m, nums2, n, index1 - 1, index2, indexMerged - 1);
+    }
+    else {
+        nums1[indexMerged] = nums2[index2];
+        mergeHelper(nums1, m, nums2, n, index1, index2 - 1, indexMerged - 1);
+    }
+}
+
+void merge(vector<int>& nums1, int m, const vector<int>& nums2, int n) {
+    mergeHelper(nums1, m, nums2, n, m - 1, n - 1, m + n - 1);
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    vector<int> nums1 = { 1, 2, 3, 0, 0, 0 };
+    vector<int> nums2 = { 2, 5, 6 };
+    int m = 3, n = 3;
+
+    merge(nums1, m, nums2, n);
+
+    cout << "Об’єднаний масив (приклад 1): ";
+    for (int num : nums1) cout << num << " ";
+    cout << endl;
+
+    vector<int> nums3 = { 1 };
+    vector<int> nums4 = {};
+    m = 1, n = 0;
+
+    merge(nums3, m, nums4, n);
+
+    cout << "Об’єднаний масив (приклад 2): ";
+    for (int num : nums3) cout << num << " ";
+    cout << endl;
+
+    vector<int> nums5 = { 0 };
+    vector<int> nums6 = { 1 };
+    m = 0, n = 1;
+
+    merge(nums5, m, nums6, n);
+
+    cout << "Об’єднаний масив (приклад 3): ";
+    for (int num : nums5) cout << num << " ";
+    cout << endl;
+
+    return 0;
+}
+
+6)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int removeDuplicatesHelper(vector<int>& nums, int current, int uniqueIndex) {
+    if (current == nums.size()) return uniqueIndex; 
+
+    if (current == 0 || nums[current] != nums[current - 1]) {
+        nums[uniqueIndex] = nums[current];
+        return removeDuplicatesHelper(nums, current + 1, uniqueIndex + 1);
+    }
+    else {
+        return removeDuplicatesHelper(nums, current + 1, uniqueIndex);
+    }
+}
+
+int removeDuplicates(vector<int>& nums) {
+    return removeDuplicatesHelper(nums, 0, 0);
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    vector<int> nums1 = { 1, 1, 2 };
+    vector<int> nums2 = { 0, 0, 1, 1, 1, 2, 2, 3, 3, 4 };
+
+    int k1 = removeDuplicates(nums1);
+    cout << "Унікальна кількість (приклад 1): " << k1 << ", nums = ";
+    for (int i = 0; i < k1; i++) cout << nums1[i] << " ";
+    cout << endl;
+
+    int k2 = removeDuplicates(nums2);
+    cout << "Унікальна кількість (приклад 2): " << k2 << ", nums = ";
+    for (int i = 0; i < k2; i++) cout << nums2[i] << " ";
+    cout << endl;
+
+    return 0;
+}
+
+7)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+bool checkIfExistHelper(const vector<int>& arr, int current, int indexToCheck) {
+    if (current >= arr.size()) return false; 
+
+    if (indexToCheck < arr.size()) {
+        if (current != indexToCheck && arr[current] == 2 * arr[indexToCheck]) {
+            return true;
+        }
+        return checkIfExistHelper(arr, current, indexToCheck + 1);
+    }
+    else {
+        return checkIfExistHelper(arr, current + 1, 0);
+    }
+}
+
+bool checkIfExist(vector<int>& arr) {
+    return checkIfExistHelper(arr, 0, 0);
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    vector<int> arr1 = { 10, 2, 5, 3 };
+    vector<int> arr2 = { 3, 1, 7, 11 };
+
+    cout << "Перевірте, чи існують N і його подвійник (Приклад 1): " << (checkIfExist(arr1) ? "true" : "false") << endl;
+    cout << "Перевірте, чи існують N і його подвійник (Приклад 2): " << (checkIfExist(arr2) ? "true" : "false") << endl;
+
+    return 0;
+}
+
+8)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+bool isIncreasing(const vector<int>& arr, int index) {
+    if (index == arr.size() - 1 || arr[index] >= arr[index + 1]) return false;
+    if (arr[index] < arr[index + 1]) return true;
+    return isIncreasing(arr, index + 1);
+}
+
+bool isDecreasing(const vector<int>& arr, int index) {
+    if (index == arr.size() - 1) return true;
+    if (arr[index] <= arr[index + 1]) return false;
+    return isDecreasing(arr, index + 1);
+}
+
+bool validMountainArray(const vector<int>& arr) {
+    if (arr.size() < 3) return false;
+
+    int peak = 0;
+    while (peak + 1 < arr.size() && arr[peak] < arr[peak + 1]) {
+        peak++;
+    }
+
+    if (peak == 0 || peak == arr.size() - 1) return false;
+
+    return isIncreasing(arr, 0) && isDecreasing(arr, peak);
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    vector<int> arr1 = { 2, 1 };
+    vector<int> arr2 = { 3, 5, 5 };
+    vector<int> arr3 = { 0, 3, 2, 1 };
+
+    cout << "Дійсний гірський масив (Приклад 1): " << (validMountainArray(arr1) ? "true" : "false") << endl;
+    cout << "Дійсний гірський масив (Приклад 2): " << (validMountainArray(arr2) ? "true" : "false") << endl;
+    cout << "Дійсний гірський масив (Приклад 3): " << (validMountainArray(arr3) ? "true" : "false") << endl;
+
+    return 0;
+}
+
+9)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> replaceWithLargestOnRight(vector<int>& arr) {
+    int n = arr.size();
+    if (n == 0) return arr;
+
+    int maxRight = arr[n - 1];  
+    arr[n - 1] = -1;  
+
+    
+    for (int i = n - 2; i >= 0; i--) {
+        int current = arr[i];
+        arr[i] = maxRight; 
+        if (current > maxRight) {
+            maxRight = current;  
+        }
+    }
+
+    return arr;
+}
+
+int main() {
+    vector<int> arr = { 17, 18, 5, 4, 6, 1 };
+    vector<int> result = replaceWithLargestOnRight(arr);
+
+    for (int num : result) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+
+10)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+vector<int> sortByParity(vector<int>& nums) {
+    int left = 0; 
+    int right = nums.size() - 1;  
+
+    while (left < right) {
+        
+        if (nums[left] % 2 == 0) {
+            left++;
+        }
+        
+        else if (nums[right] % 2 != 0) {
+            right--;
+        }
+        
+        else {
+            swap(nums[left], nums[right]);
+            left++;
+            right--;
+        }
+    }
+
+    return nums;
+}
+
+int main() {
+    vector<int> nums = { 3, 1, 2, 4 };
+    vector<int> result = sortByParity(nums);
+
+    for (int num : result) {
+        cout << num << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+
