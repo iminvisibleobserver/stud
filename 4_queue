@@ -1,0 +1,416 @@
+1)
+#include <iostream>
+#include <unordered_map>
+#include <queue>
+using namespace std;
+
+int firstUniqChar(string s) {
+    unordered_map<char, int> charCount;  
+    queue<int> orderQueue;  
+
+   
+    for (int i = 0; i < s.length(); ++i) {
+        charCount[s[i]]++;
+        orderQueue.push(i);
+    }
+
+  
+    while (!orderQueue.empty()) {
+        int index = orderQueue.front();
+        orderQueue.pop();
+
+        
+        if (charCount[s[index]] == 1) {
+            return index;  
+        }
+    }
+
+    return -1;  
+}
+
+int main() {
+
+    cout << firstUniqChar("leopard") << endl;  
+    cout << firstUniqChar("loveleopard") << endl; 
+    cout << firstUniqChar("aabb") << endl;  
+    return 0;
+}
+
+2)
+#include <iostream>
+#include <queue>
+using namespace std;
+
+class MyStack {
+public:
+    MyStack() {
+       
+        q1 = queue<int>();
+        q2 = queue<int>();
+    }
+
+    void push(int x) {
+      
+        q1.push(x);
+    }
+
+    int pop() {
+     
+        while (q1.size() > 1) {
+            q2.push(q1.front());
+            q1.pop();
+        }
+
+    
+        int top = q1.front();
+        q1.pop();
+
+     
+        while (!q2.empty()) {
+            q1.push(q2.front());
+            q2.pop();
+        }
+
+        return top;
+    }
+
+    int top() {
+        
+        while (q1.size() > 1) {
+            q2.push(q1.front());
+            q1.pop();
+        }
+
+        
+        int top = q1.front();
+
+       
+        q2.push(top);
+
+        
+        while (!q2.empty()) {
+            q1.push(q2.front());
+            q2.pop();
+        }
+
+        return top;
+    }
+
+    bool empty() {
+        
+        return q1.empty();
+    }
+
+private:
+    queue<int> q1, q2;  
+};
+
+int main() {
+    MyStack myStack;
+
+    
+    myStack.push(1);
+    myStack.push(2);
+    cout << myStack.top() << endl;   
+    cout << myStack.pop() << endl;   
+    cout << myStack.empty() << endl; 
+
+    return 0;
+}
+
+3)
+#include <iostream>
+#include <queue>
+using namespace std;
+
+class RecentCounter {
+public:
+    RecentCounter() {
+   
+    }
+
+    int ping(int t) {
+     
+        requests.push(t);
+
+       
+        while (requests.front() < t - 3000) {
+            requests.pop();
+        }
+
+        
+        return requests.size();
+    }
+
+private:
+    queue<int> requests;  
+};
+
+int main() {
+    RecentCounter recentCounter;
+
+ 
+    cout << recentCounter.ping(1) << endl;    
+    cout << recentCounter.ping(100) << endl;  
+    cout << recentCounter.ping(3001) << endl; 
+    cout << recentCounter.ping(3002) << endl; 
+
+    return 0;
+}
+
+4)
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class MyCircularQueue {
+public:
+    MyCircularQueue(int k) {
+        size = k + 1;  
+        queue = vector<int>(size, -1);  
+        front = 0;
+        rear = 0;
+    }
+
+    bool enQueue(int value) {
+        
+        if (isFull()) {
+            return false;
+        }
+        queue[rear] = value;
+        rear = (rear + 1) % size;  
+        return true;
+    }
+
+    bool deQueue() {
+        
+        if (isEmpty()) {
+            return false;
+        }
+        front = (front + 1) % size;  
+        return true;
+    }
+
+    int Front() {
+        
+        return isEmpty() ? -1 : queue[front];
+    }
+
+    int Rear() {
+        
+        return isEmpty() ? -1 : queue[(rear - 1 + size) % size];
+    }
+
+    bool isEmpty() {
+        
+        return front == rear;
+    }
+
+    bool isFull() {
+        
+        return (rear + 1) % size == front;
+    }
+
+private:
+    vector<int> queue;  
+    int size;           
+    int front;          
+    int rear;           
+};
+
+int main() {
+    MyCircularQueue myCircularQueue(3);
+
+  
+    cout << myCircularQueue.enQueue(1) << endl;  
+    cout << myCircularQueue.enQueue(2) << endl;  
+    cout << myCircularQueue.enQueue(3) << endl;  
+    cout << myCircularQueue.enQueue(4) << endl;  
+    cout << myCircularQueue.Rear() << endl;      
+    cout << myCircularQueue.isFull() << endl;    
+    cout << myCircularQueue.deQueue() << endl;   
+    cout << myCircularQueue.enQueue(4) << endl;  
+    cout << myCircularQueue.Rear() << endl;      
+
+    return 0;
+}
+
+5)
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> movesToStamp(string stamp, string target) {
+        int m = stamp.size(), n = target.size();
+        vector<bool> visited(n, false);  
+        vector<int> result;  
+        string s = string(n, '?');  
+
+        
+        auto canStamp = [&](int i) {
+            bool can = false;
+            for (int j = 0; j < m; ++j) {
+                if (target[i + j] == stamp[j] || target[i + j] == '?') {
+                    can = true;
+                }
+                else {
+                    return false;
+                }
+            }
+            return can;
+            };
+
+        
+        auto applyStamp = [&](int i) {
+            for (int j = 0; j < m; ++j) {
+                if (target[i + j] != '?') {
+                    visited[i + j] = true;  
+                    target[i + j] = '?';
+                }
+            }
+            result.push_back(i);
+            };
+
+      
+        int changed = 0;
+        while (changed < n) {
+            bool stamped = false;
+            for (int i = 0; i <= n - m; ++i) {
+                if (!visited[i] && canStamp(i)) {
+                    applyStamp(i);
+                    stamped = true;
+                    changed += m;  
+                    break;
+                }
+            }
+
+            
+            if (!stamped) {
+                return {};
+            }
+        }
+
+        
+        reverse(result.begin(), result.end());
+        return result;
+    }
+};
+
+int main() {
+    Solution solution;
+
+    string stamp = "abc", target = "ababc";
+    vector<int> result = solution.movesToStamp(stamp, target);
+
+
+    for (int i : result) {
+        cout << i << " ";
+    }
+    return 0;
+}
+
+6)
+
+#include <iostream>
+#include <vector>
+#include <deque>
+
+using namespace std;
+
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        vector<int> result;
+        deque<int> dq;  
+
+        for (int i = 0; i < nums.size(); ++i) {
+           
+            if (!dq.empty() && dq.front() < i - k + 1) {
+                dq.pop_front();
+            }
+
+           
+            while (!dq.empty() && nums[dq.back()] < nums[i]) {
+                dq.pop_back();
+            }
+
+          
+            dq.push_back(i);
+
+          
+            if (i >= k - 1) {
+                result.push_back(nums[dq.front()]);
+            }
+        }
+
+        return result;
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<int> nums = { 1,3,-1,-3,5,3,6,7 };
+    int k = 3;
+    vector<int> result = solution.maxSlidingWindow(nums, k);
+
+
+    for (int num : result) {
+        cout << num << " ";
+    }
+    return 0;
+}
+
+7)
+
+#include <iostream>
+#include <vector>
+#include <deque>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int maxSumSubsequence(vector<int>& nums, int k) {
+        int n = nums.size();
+        vector<int> dp(n, 0);
+        deque<int> dq;  
+
+        dp[0] = nums[0];
+        dq.push_back(0);  
+
+        for (int i = 1; i < n; ++i) {
+            
+            if (!dq.empty() && dq.front() < i - k) {
+                dq.pop_front(); 
+            }
+
+           
+            dp[i] = nums[i] + (dq.empty() ? 0 : dp[dq.front()]);
+
+            
+            while (!dq.empty() && dp[dq.back()] <= dp[i]) {
+                dq.pop_back();
+            }
+
+            dq.push_back(i);  
+        }
+
+        
+        return *max_element(dp.begin(), dp.end());
+    }
+};
+
+int main() {
+    Solution solution;
+    vector<int> nums = { 10, 2, -10, 5, 20 };
+    int k = 2;
+    int result = solution.maxSumSubsequence(nums, k);
+    cout << "Maximum sum of subsequence: " << result << endl;
+
+    return 0;
+}
